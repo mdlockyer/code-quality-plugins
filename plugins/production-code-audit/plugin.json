@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Audit a codebase the way years of production use would: enumerate, understand, hunt with single-question lenses, reproduce, verify adversarially, then fix with regression tests.",
   "author": {
-    "name": "mdlockyer",
+    "name": "Michael Lockyer",
     "url": "https://github.com/mdlockyer"
   },
   "homepage": "https://github.com/mdlockyer/production-code-audit",
@@ -17,7 +17,7 @@
         "displayName": "Production Code Audit",
         "shortDescription": "Find and prove the bugs years of production use would have found.",
         "longDescription": "A phased audit that treats bug-finding as a search: enumerate and rank units, build understanding records, hunt with single-question lenses, reproduce every candidate, verify adversarially, report with coverage, then fix approved findings with regression tests. Ships five worker-agent definitions for subagent-capable hosts and a sequential fallback for the rest.",
-        "developerName": "mdlockyer",
+        "developerName": "Michael Lockyer",
         "category": "Developer Tools",
         "capabilities": ["Read", "Write"],
         "websiteURL": "https://github.com/mdlockyer/production-code-audit",

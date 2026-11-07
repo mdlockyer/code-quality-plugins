@@ -11,7 +11,7 @@
     "Find the edge-case bugs in this service before we launch"
   ],
   "author": {
-    "name": "mdlockyer",
+    "name": "Michael Lockyer",
     "url": "https://github.com/mdlockyer"
   },
   "homepage": "https://github.com/mdlockyer/production-code-audit",

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Audit a codebase the way years of production use would: enumerate, understand, hunt with single-question lenses, reproduce, verify adversarially, then fix with regression tests.",
   "author": {
-    "name": "mdlockyer",
+    "name": "Michael Lockyer",
     "url": "https://github.com/mdlockyer"
   },
   "homepage": "https://github.com/mdlockyer/production-code-audit",
@@ -14,7 +14,7 @@
   "interface": {
     "displayName": "Production Code Audit",
     "shortDescription": "Find and prove the bugs years of production use would have found.",
-    "developerName": "mdlockyer",
+    "developerName": "Michael Lockyer",
     "category": "Developer Tools"
   }
 }

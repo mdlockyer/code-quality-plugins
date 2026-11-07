@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Audit a codebase the way years of production use would: enumerate, understand, hunt with single-question lenses, reproduce, verify adversarially, then fix with regression tests. Ships an orchestration skill plus five worker agents (context builder, hunter, reproducer, verifier, fix reviewer).",
   "author": {
-    "name": "mdlockyer",
+    "name": "Michael Lockyer",
     "url": "https://github.com/mdlockyer"
   },
   "keywords": [

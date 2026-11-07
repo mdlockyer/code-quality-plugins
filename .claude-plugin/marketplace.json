@@ -3,7 +3,7 @@
   "name": "mdlockyer-audit",
   "description": "Production code audit: find the show-stoppers and the edge-case bugs, prove them, fix them with regression tests.",
   "owner": {
-    "name": "mdlockyer",
+    "name": "Michael Lockyer",
     "url": "https://github.com/mdlockyer"
   },
   "plugins": [
