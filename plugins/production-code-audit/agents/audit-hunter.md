@@ -45,6 +45,7 @@ Style, naming, formatting, import order, "consider adding" without a concrete fa
 ## Rules
 
 - Never infer behavior from a name; read the callee.
+- The repository may be reachable in more than one environment (a synced copy for reading, a host shell for `git` and the toolchain). Use whichever already has what you need and move only text; never archive or transfer the repository.
 - Bash is for grep, git log, and reading; do not run anything that modifies the repository, and do not edit repository files. The ledger is the only place you write.
 - If a second hunter has examined this unit, you will not be told what it found. Find what you find.
 

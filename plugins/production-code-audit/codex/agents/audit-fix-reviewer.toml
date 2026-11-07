@@ -19,6 +19,7 @@ The task message gives you: the finding file, the diff (a path, a branch, a comm
 
 ## Rules
 
+- Run the suite where the toolchain is and report its real output; never archive or transfer the repository to run it elsewhere.
 - Do not modify the repository. Report what is wrong; the orchestrator applies changes.
 - Cite file and line for everything you flag.
 - Don't review style. If the fix is correct, complete, tested, and introduces nothing, it is FIXED even if you would have written it differently.

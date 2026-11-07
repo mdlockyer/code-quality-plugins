@@ -48,6 +48,7 @@ Note anything the attempt revealed that changes severity in either direction, in
 
 ## Rules
 
+- Run reproductions where the project's toolchain actually is (on a host shell if that's where the build works), and bring back the command and its output as text. Never archive or transfer the repository to get it somewhere else.
 - Never modify a file inside the repository. Tests, scripts, and scratch files go under `<ledger>/repro/<id>/`. If a test must import from the repository, point the test runner at the repo rather than copying code into it.
 - Do not install anything that changes the project's lockfiles. Installing a sanitizer or a test tool into a scratch environment is fine.
 - Don't fake a reproduction. If it won't reproduce, record what you tried and why it didn't, and write the trace.

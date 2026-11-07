@@ -27,6 +27,20 @@ All working state lives on disk in a scratch directory **outside the repository*
 
 Candidate statuses: `CONFIRMED` (reproduced by execution), `TRACED` (full static path with every hop cited, could not execute), `SPECULATIVE` (a hunch without a path), `REJECTED` (verifier falsified it, with the reason). Only CONFIRMED and TRACED reach the main report.
 
+## Where things run
+
+Before phase 0, work out the topology, because it is often not one machine. In Cowork the skill and its script live in a Linux sandbox, a folder added to the session is a synced copy of the working tree (usually without `.git` and never with the project's toolchain), and a host-shell connector such as traversal-workspace reaches the real repository on the person's machine. In Claude Code everything is one tree. Other hosts fall somewhere between.
+
+Figure out three things and write them at the top of `recon.md`: where the repository's files can be read, where its `.git` history and build toolchain can be executed, and where you can write freely. Then use each environment for what it has:
+
+- Read and grep files wherever they already are; the synced copy is fine for that.
+- Run `git log`, the build, the tests, and the linters where the toolchain is, and bring back only their text output. On a host shell, that means running the command there and writing the output into the ledger, not running it in the sandbox against a copy that can't build.
+- If `inventory.py` can't reach the repo, write the script to the host as a text file and run it there, or skip it and build the inventory by hand; the script is a convenience, not a gate.
+- Keep the ledger wherever you can write most freely; a host-side sibling directory beside the repo is a good default.
+- If a step needs something no reachable environment has (no `.git` anywhere, no toolchain), record that in `recon.md` as a coverage gap and move on.
+
+**Move text, not trees.** Never archive a repository (`git bundle`, `tar`, `zip`) to transfer it between environments, and never try to upload one through a file bridge. Those bridges are built for documents and refuse or truncate archives, and even when they work you end up auditing a stale copy. Every phase below works on read access plus the text output of commands.
+
 ## Modes
 
 Pick a mode from the size of the target and what the user asked for, and state it in the report.
@@ -68,7 +82,7 @@ Done when: `recon.md` and `inventory.md` exist, every entry point is listed, and
 
 Do this yourself (it needs the whole-repo view) with help from the script.
 
-1. Run `python <skill-dir>/scripts/inventory.py <repo> --out <ledger>/inventory.json` (in the plugin, `<skill-dir>` is `${CLAUDE_PLUGIN_ROOT}/skills/production-code-audit`); it also writes `<ledger>/inventory.md` with a ranked table and an empty status ledger to fill in. It lists every source file with LOC, language, entry-point and risk markers, suppression comments, swallowed exceptions, TODO/FIXME/HACK density, and git churn and bug-fix frequency. It is a heuristic starting point, not the ranking.
+1. Where you can run it against the repo, run `python <skill-dir>/scripts/inventory.py <repo> --out <ledger>/inventory.json` (in the plugin, `<skill-dir>` is `${CLAUDE_PLUGIN_ROOT}/skills/production-code-audit`); it also writes `<ledger>/inventory.md` with a ranked table and an empty status ledger to fill in. It lists every source file with LOC, language, entry-point and risk markers, suppression comments, swallowed exceptions, TODO/FIXME/HACK density, and git churn and bug-fix frequency. It is a heuristic starting point, not the ranking, and not a gate: if it can't reach the repo (see Where things run), build the inventory by hand from the enumeration in steps 3 and 4 and from `git log --stat`.
 2. Establish the stack, how it's built, how it's run, how it's deployed, and what the tests look like. Read the README, build files, CI config, Dockerfiles, and the test directory layout. Note anything the project claims to guarantee (docs, docstrings, type signatures, tests): that is the intended behavior you will compare against later.
 3. **Enumerate every entry point**: HTTP routes, RPC handlers, CLI commands, cron/scheduled jobs, queue and event consumers, webhooks, signal handlers, startup/shutdown hooks, migrations. Enumerate with grep and the framework's own registration patterns, not by browsing. A missed entry point is a missed audit.
 4. Map trust boundaries: what is user-controlled, what is tenant-scoped, what is operator-only, what comes from other services, what is persisted and read back later (stored input is still untrusted input).
@@ -137,6 +151,7 @@ These are the specific ways an audit turns thin, and the ledger exists to make e
 - **Declaring done early.** The report gets written when the orchestrator has "enough", not when the inventory is covered. The done conditions above are the check; an inventory with blank status cells means the audit isn't finished.
 - **Reporting hunches as findings.** A SPECULATIVE candidate dressed up with confident language. The trigger/path/impact requirement and the verifier's citation check exist to catch this.
 - **Skipping the oracles.** Not running the tests, type checker, or linters because "the audit is about deeper issues". Those tools find real bugs for free and calibrate the rest of the audit.
+- **Transferring the repo.** Bundling or tarring the repository to get it into the environment that has the script or the native file tools. The file bridge refuses it, and the right move was to run commands where the toolchain is and move only their output.
 - **Letting the script rank.** `inventory.py` scores are heuristics. A file with no markers can still be the one that handles the money.
 - **`nothing applies` without reading the callees.** A hunter that answers a lens from the unit's own text, without following the calls, answers it from names. The context record's callee list is there so the hunter knows what to read.
 - **Verifiers that rubber-stamp.** A verifier that re-reads the hunter's reasoning and agrees has done nothing. The verifier template is adversarial for a reason; give it the finding file, not the hunter's transcript.
