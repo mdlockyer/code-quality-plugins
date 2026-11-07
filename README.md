@@ -6,10 +6,10 @@ The same repository is a marketplace for three hosts:
 
 | Host | Install |
 |---|---|
-| Claude Code | `/plugin install production-code-audit --marketplace mlockyer/production_code_audit` |
+| Claude Code | `/plugin install production-code-audit --marketplace mdlockyer/production-code-audit` |
 | Claude Cowork | Install from the marketplace above, or open `dist/production-code-audit.plugin` from a release |
-| OpenAI Codex | `codex plugin marketplace add mlockyer/production_code_audit` then `codex plugin add production-code-audit@mlockyer-audit` |
-| Google Antigravity | `agy plugin install https://github.com/mlockyer/production_code_audit/tree/main/plugins/production-code-audit` |
+| OpenAI Codex | `codex plugin marketplace add mdlockyer/production-code-audit` then `codex plugin add production-code-audit@mdlockyer-audit` |
+| Google Antigravity | `agy plugin install https://github.com/mdlockyer/production-code-audit/tree/main/plugins/production-code-audit` |
 
 Full usage, tuning, and the agent table are in [`plugins/production-code-audit/README.md`](plugins/production-code-audit/README.md).
 
@@ -28,7 +28,7 @@ dist/                             Packaged artifacts (.plugin, .skill), not comm
 claude plugin validate .                              # marketplace
 claude plugin validate ./plugins/production-code-audit
 agy plugin validate ./plugins/production-code-audit  # --strict warns about the multi-host manifests by design
-codex plugin marketplace add . && codex plugin list && codex plugin marketplace remove mlockyer-audit
+codex plugin marketplace add . && codex plugin list && codex plugin marketplace remove mdlockyer-audit
 ```
 
 ## Design notes

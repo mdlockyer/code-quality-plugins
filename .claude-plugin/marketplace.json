@@ -1,10 +1,10 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "mlockyer-audit",
+  "name": "mdlockyer-audit",
   "description": "Production code audit: find the show-stoppers and the edge-case bugs, prove them, fix them with regression tests.",
   "owner": {
-    "name": "mlockyer",
-    "url": "https://github.com/mlockyer"
+    "name": "mdlockyer",
+    "url": "https://github.com/mdlockyer"
   },
   "plugins": [
     {

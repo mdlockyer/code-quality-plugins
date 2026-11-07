@@ -11,11 +11,11 @@
     "Find the edge-case bugs in this service before we launch"
   ],
   "author": {
-    "name": "mlockyer",
-    "url": "https://github.com/mlockyer"
+    "name": "mdlockyer",
+    "url": "https://github.com/mdlockyer"
   },
-  "homepage": "https://github.com/mlockyer/production_code_audit",
-  "repository": "https://github.com/mlockyer/production_code_audit",
+  "homepage": "https://github.com/mdlockyer/production-code-audit",
+  "repository": "https://github.com/mdlockyer/production-code-audit",
   "license": "MIT",
   "keywords": ["audit", "code-review", "bugs", "production-readiness", "security", "verification"]
 }

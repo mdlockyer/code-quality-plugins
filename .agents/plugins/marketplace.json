@@ -1,5 +1,5 @@
 {
-  "name": "mlockyer-audit",
+  "name": "mdlockyer-audit",
   "interface": {
     "displayName": "Production Code Audit"
   },

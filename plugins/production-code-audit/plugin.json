@@ -4,11 +4,11 @@
   "version": "0.1.0",
   "description": "Audit a codebase the way years of production use would: enumerate, understand, hunt with single-question lenses, reproduce, verify adversarially, then fix with regression tests.",
   "author": {
-    "name": "mlockyer",
-    "url": "https://github.com/mlockyer"
+    "name": "mdlockyer",
+    "url": "https://github.com/mdlockyer"
   },
-  "homepage": "https://github.com/mlockyer/production_code_audit",
-  "repository": "https://github.com/mlockyer/production_code_audit",
+  "homepage": "https://github.com/mdlockyer/production-code-audit",
+  "repository": "https://github.com/mdlockyer/production-code-audit",
   "license": "MIT",
   "keywords": ["audit", "code-review", "bugs", "production-readiness", "security", "verification"],
   "extensions": {
@@ -17,10 +17,10 @@
         "displayName": "Production Code Audit",
         "shortDescription": "Find and prove the bugs years of production use would have found.",
         "longDescription": "A phased audit that treats bug-finding as a search: enumerate and rank units, build understanding records, hunt with single-question lenses, reproduce every candidate, verify adversarially, report with coverage, then fix approved findings with regression tests. Ships five worker-agent definitions for subagent-capable hosts and a sequential fallback for the rest.",
-        "developerName": "mlockyer",
+        "developerName": "mdlockyer",
         "category": "Developer Tools",
         "capabilities": ["Read", "Write"],
-        "websiteURL": "https://github.com/mlockyer/production_code_audit",
+        "websiteURL": "https://github.com/mdlockyer/production-code-audit",
         "defaultPrompt": [
           "Audit this repo for production readiness and show me what will break.",
           "Go deep on everything that touches money, auth, or the database, with proof."
