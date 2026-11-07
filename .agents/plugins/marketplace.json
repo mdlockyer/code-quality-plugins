@@ -1,0 +1,20 @@
+{
+  "name": "mlockyer-audit",
+  "interface": {
+    "displayName": "Production Code Audit"
+  },
+  "plugins": [
+    {
+      "name": "production-code-audit",
+      "source": {
+        "source": "local",
+        "path": "./plugins/production-code-audit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
+    }
+  ]
+}

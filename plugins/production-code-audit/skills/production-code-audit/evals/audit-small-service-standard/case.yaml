@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: audit-small-service-standard
+expected_outcome: |
+  A ledger directory is created outside the repo with inventory, recon, per-unit context records, candidates, and finding files. Free oracles (build, tests, linters) are actually run and their output recorded. Every rank-4/5 unit has a context record and lens results (findings or explicit "nothing applies"). Each reported finding has file:line citations, a trigger, a path, an impact, and either a reproduction with captured output or a complete cited trace. A verifier pass is recorded per finding. The report leads with counts and a coverage section, groups findings by severity, contains no style/naming nits, and stops to ask which fixes to apply. No files inside the repo are modified.

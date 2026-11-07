@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: audit-no-subagents-fallback
+expected_outcome: |
+  With no subagent tool available, the audit still runs every phase sequentially: units are processed one at a time with records written to disk before moving on, lenses are run as separate passes with their results written individually, verification re-reads finding files cold, and the user gets progress updates at phase boundaries. Coverage and evidence standards are the same as the subagent case.

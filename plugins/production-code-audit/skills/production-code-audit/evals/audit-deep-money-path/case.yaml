@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: audit-deep-money-path
+expected_outcome: |
+  Deep mode is selected and stated. Rank-4/5 units get two independent hunters with all lenses including the trust and persistence groups. Every candidate gets a reproduction attempt. Findings around money use the severity rubric (float money, non-idempotent retries, missing tenant filters are caught if present). The audit stops for approval before any edit; after approval, each fix is applied one at a time with a regression test, the suite is re-run with real output, and a fresh-context fix review is recorded.

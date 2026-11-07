@@ -1,0 +1,20 @@
+{
+  "name": "production-code-audit",
+  "version": "0.1.0",
+  "description": "Audit a codebase the way years of production use would: enumerate, understand, hunt with single-question lenses, reproduce, verify adversarially, then fix with regression tests. Ships an orchestration skill plus five worker agents (context builder, hunter, reproducer, verifier, fix reviewer).",
+  "author": {
+    "name": "mlockyer",
+    "url": "https://github.com/mlockyer"
+  },
+  "keywords": [
+    "audit",
+    "code-review",
+    "bugs",
+    "production-readiness",
+    "security",
+    "verification"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/mlockyer/production_code_audit",
+  "repository": "https://github.com/mlockyer/production_code_audit"
+}
