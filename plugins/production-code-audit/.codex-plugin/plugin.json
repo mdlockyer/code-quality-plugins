@@ -1,6 +1,6 @@
 {
   "name": "production-code-audit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Audit a codebase the way years of production use would: enumerate, understand, hunt with single-question lenses, reproduce, verify adversarially, then fix with regression tests.",
   "author": {
     "name": "Michael Lockyer",
