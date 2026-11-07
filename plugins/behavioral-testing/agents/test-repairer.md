@@ -1,7 +1,7 @@
 ---
 name: test-repairer
 description: |
-  Rewrites one approved test-audit finding into a test that can fail, using expected values derived by the oracle-writer and the oracle ladder's rewrite patterns, preserving the project's conventions, one behavior per test, and recording before/after with the derivation of every literal. The only agent in the plugin that edits test files. Dispatched by test-repair, one finding per agent. Never changes what a test asserts without the finding's approved move.
+  Rewrites one approved test-audit finding into a test that can fail, using expected values derived by the oracle-writer and the oracle ladder's rewrite patterns, preserving the project's conventions, one behavior per test, and recording before/after with the derivation of every literal. The only role that edits test files. Dispatched by test-repair, one finding per agent. Never changes what a test asserts without the finding's approved move.
 
   <example>
   Context: Repair approved for a strengthen finding

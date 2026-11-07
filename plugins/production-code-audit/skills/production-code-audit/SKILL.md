@@ -53,23 +53,21 @@ Pick a mode from the size of the target and what the user asked for, and state i
 
 ## Dispatching work
 
-This skill is written for an orchestrator. You are the orchestrator; the phases below say which work to **dispatch** to a fresh-context worker and which to do yourself. Use whatever mechanism your harness provides for subagents (a Task/Agent tool, a worker spawn, parallel sessions). Every worker writes its full output to the ledger and returns only a short record. You read records, not prose.
+This skill is written for an orchestrator. You are the orchestrator; the phases below say which work to **dispatch** to a fresh-context worker and which to do yourself. Workers write their full output to the ledger and return only a short record. You read records, not prose.
 
-**When this skill is installed as the `production-code-audit` plugin**, the workers exist as named agents and you dispatch them by name:
+There are five worker roles. Each has a procedure in `references/dispatch-prompts.md`, and each procedure begins by listing the slots its task message must contain:
 
-| Phase | Agent | Give it |
+| Phase | Role | Slots |
 |---|---|---|
-| 1 Understanding | `audit-context-builder` | unit, repo root, ledger, references dir, recon facts for the unit |
-| 2 Hunt | `audit-hunter` | unit, mode, ordered lens list, context record path, recon facts, repo root, ledger, references dir |
-| 3 Reproduce | `audit-reproducer` | finding file(s), how to build/run/test, environment constraints, repo root, ledger, references dir |
-| 4 Verify | `audit-verifier` | finding file(s), repo root, ledger, references dir, where recon.md is |
-| 6 Fix review | `audit-fix-reviewer` | finding file, the diff, repo root, how to run tests |
+| 1 Understanding | context-builder | unit, repo root, ledger, references dir, recon facts for the unit |
+| 2 Hunt | hunter | unit, mode, ordered lens list, context record path, recon facts, repo root, ledger, references dir |
+| 3 Reproduce | reproducer | finding file(s), how to build/run/test, environment constraints, repo root, ledger, references dir |
+| 4 Verify | verifier | finding file(s), repo root, ledger, references dir, where recon.md is |
+| 6 Fix review | fix-reviewer | finding file, the diff, repo root, how to run tests |
 
-When the `behavioral-testing` plugin is also installed, prefer its agents where they overlap: `bug-repro` for phase 3 reproductions, `test-verifier` for the phase 6 fix review, and `test-auditor` for the L15 lens. They carry the three-code-state discipline; the audit's own agents carry a compact version of it.
+How a role becomes a worker depends on the harness. If it has named agents for these roles (a plugin build of this skill ships them under the same names, prefixed `audit-`), dispatch the agent and send only the slots. Otherwise send the role's procedure from `dispatch-prompts.md` together with the slots as the worker's task, through whatever subagent mechanism exists. Always include the absolute path of this skill's `references/` directory, because workers read formats and rules from it. Workers get fresh context on purpose: give them facts (paths, the relevant part of `recon.md`), not your conclusions.
 
-The agents carry their own procedures; your task message supplies only the slots above. Always include the absolute path of this skill's `references/` directory, because the agents read the formats and rules from it. **When the agents are not available** (the skill is installed standalone, or the harness has subagents but not named agents), build each worker's prompt from the templates in `references/dispatch-prompts.md` instead; they are the same procedures.
-
-Workers get fresh context on purpose. A worker that has read the whole codebase rationalizes what it sees; a worker that has read one unit and its callees finds the gap. Keep it that way: don't paste your own conclusions into worker prompts beyond the facts in `recon.md`.
+Some roles overlap with the testing skills (`bug-repro`, `test-audit`, `test-repair`). When those skills are available in the session, their procedures are the fuller versions of what this skill's reproducer, verifier, and L15 lens do; use them. When they are not, this skill is self-contained.
 
 **If your harness has no subagents:** run the same phases sequentially, yourself, with these adaptations.
 
@@ -89,7 +87,7 @@ Do this yourself (it needs the whole-repo view) with help from the script.
 3. **Enumerate every entry point**: HTTP routes, RPC handlers, CLI commands, cron/scheduled jobs, queue and event consumers, webhooks, signal handlers, startup/shutdown hooks, migrations. Enumerate with grep and the framework's own registration patterns, not by browsing. A missed entry point is a missed audit.
 4. Map trust boundaries: what is user-controlled, what is tenant-scoped, what is operator-only, what comes from other services, what is persisted and read back later (stored input is still untrusted input).
 5. **Run every free oracle** the project has and record results in `recon.md`: build, type checker, test suite, linters, and whatever static analysis fits the stack (`semgrep`, `bandit`, `gosec`, `cargo clippy`, `npm audit`, `pip-audit`, `go vet`, `staticcheck`, `eslint`, `mypy`, `tsc --strict` if not already on). Install a tool if it's a one-liner. A failing build or a flaky suite is itself a finding. Oracle output also tells you what *doesn't* need a human-quality read.
-6. **Calibrate the test oracle.** "The tests pass" is evidence only in proportion to the suite's ability to fail. If the `behavioral-testing` plugin is installed, run its `test_inventory.py` and record the weak-tier share, mock density, and skipped tests in `recon.md`; otherwise grep for assertion-free, existence-only (`is not None`, `toBeDefined`, `XCTAssertNotNil`, `.is_ok()`) and interaction-only tests and estimate the share by hand. A suite that is mostly weak oracles means a green run says little, and a unit whose only tests are weak is effectively unguarded: raise its rank one step.
+6. **Calibrate the test oracle.** "The tests pass" is evidence only in proportion to the suite's ability to fail. If the `test-audit` skill is available, run its `test_inventory.py` and record the weak-tier share, mock density, and skipped tests in `recon.md`; otherwise grep for assertion-free, existence-only (`is not None`, `toBeDefined`, `XCTAssertNotNil`, `.is_ok()`) and interaction-only tests and estimate the share by hand. A suite that is mostly weak oracles means a green run says little, and a unit whose only tests are weak is effectively unguarded: raise its rank one step.
 7. **Mine the history**: `git log` for commits whose messages contain fix/bug/crash/regression/hotfix/revert, and which files they touch. Files that get fixed often are bug magnets, and the *kind* of fix (null checks, off-by-one, retry logic, timezone) tells you which lens to weight. Read 10–20 of those diffs; this calibrates you to the bugs this codebase actually produces.
 8. Rank every unit 1–5 in `inventory.md`. A unit is a file or a cohesive module, your call, but keep units small enough to analyze in one worker. Rank 5: parses external input, handles money, auth, permissions, concurrency, persistence, or anything irreversible. Rank 1: constants, generated code, pure data. Err upward: the FreeBSD NFS bug sat in a file for 17 years because everyone assumed someone had obviously checked it.
 
@@ -119,7 +117,7 @@ Hunters also have a standing instruction to look for **variants**: once a bug cl
 
 Done when: every candidate is CONFIRMED, TRACED, or has a reproduction attempt recorded in its finding file explaining why execution wasn't possible.
 
-Dispatch one **reproducer** per candidate (batch cheap ones). The reproducer's job is to make the bug happen: a failing unit test, a script, a `curl`, a sanitizer or race-detector run, a debugger session, a minimal input. Anything that produces an observation of the failure. When the `behavioral-testing` plugin is installed, the reproducer follows its `bug-repro` skill; otherwise it follows the compact version in `references/verification.md`. Either way a reproduction test is judged on three code states: it fails on the current code *on an assertion* (not an import error or a crash), its expected value comes from the spec or the finding's intended-behavior source rather than from running the code, and it asserts the behavior rather than the fix the hunter proposed, so any correct fix would pass it. Roughly half of the passing checks agents collect mid-task also pass on the buggy code; the three-state check is what keeps that out of the ledger. Reproduction is what separates a real audit from an opinion, and it also changes severity, in both directions: the stack overflow that turns out to be unexploitable, and the "minor" validation gap that turns out to reach a `DELETE`.
+Dispatch one **reproducer** per candidate (batch cheap ones). The reproducer's job is to make the bug happen: a failing unit test, a script, a `curl`, a sanitizer or race-detector run, a debugger session, a minimal input. Anything that produces an observation of the failure. When the `bug-repro` skill is available in the session, the reproducer follows it; otherwise it follows the compact version in `references/verification.md`. Either way a reproduction test is judged on three code states: it fails on the current code *on an assertion* (not an import error or a crash), its expected value comes from the spec or the finding's intended-behavior source rather than from running the code, and it asserts the behavior rather than the fix the hunter proposed, so any correct fix would pass it. Roughly half of the passing checks agents collect mid-task also pass on the buggy code; the three-state check is what keeps that out of the ledger. Reproduction is what separates a real audit from an opinion, and it also changes severity, in both directions: the stack overflow that turns out to be unexploitable, and the "minor" validation gap that turns out to reach a `DELETE`.
 
 A reproduction that works upgrades the candidate to CONFIRMED and the test or script is kept in `findings/<id>.md` (it becomes the regression test in phase 6). When execution is impossible (no runnable environment, external dependency), the reproducer instead produces a TRACED record: every hop from trigger to impact cited, each hop's precondition stated, and an explicit note of which hop it could not observe.
 
@@ -149,7 +147,7 @@ Done when: every approved finding has one commit on the audit branch, each with 
 
 Before touching anything: `git status` must be clean, or the user has said which pre-existing changes to leave alone. Create a branch (`audit/<date>` or a worktree) so fixes never mix with the user's own work and each one can be reverted alone.
 
-Apply approved fixes **one finding at a time, one commit each**, in the order the user gave. For every CONFIRMED finding, the reproduction test from phase 3 becomes the regression test in the project's suite; confirm it fails before the fix and passes after, on an assertion. Fix the class where a variant list exists, not just the instance. After each fix run the full suite, the type checker, and the linters and record actual output. Then run a fix review over that one diff with fresh context: with the `behavioral-testing` plugin, its `test-verifier` checks the regression test against the three code states; without it, the `audit-fix-reviewer` agent or the template in `references/dispatch-prompts.md` does the same.
+Apply approved fixes **one finding at a time, one commit each**, in the order the user gave. For every CONFIRMED finding, the reproduction test from phase 3 becomes the regression test in the project's suite; confirm it fails before the fix and passes after, on an assertion. Fix the class where a variant list exists, not just the instance. After each fix run the full suite, the type checker, and the linters and record actual output. Then run a fix review over that one diff with a fresh-context fix-reviewer worker; when the `test-repair` skill is available, its test-verifier role checks the regression test against the three code states, and the fix-reviewer procedure does a compact version of the same check on its own.
 
 Three rules the fix phase has to hold, because this is where audits have gone wrong in practice:
 
@@ -178,7 +176,7 @@ These are the specific ways an audit turns thin, and the ledger exists to make e
 
 - **No unapproved changes.** The repo is read-only until phase 6.
 - **No hallucinated metrics.** Report only what was measured with the project's tools; quote the command and its output.
-- **No invented citations.** Every `file:line` in a finding was read by the agent that wrote it and says what the finding claims. The verifier checks.
+- **No invented citations.** Every `file:line` in a finding was read by the worker that wrote it and says what the finding claims. The verifier checks.
 - **No speculative severity.** Severity follows the rubric in `references/verification.md`, after reproduction.
 - **Respect the stack.** Fix within existing conventions; don't introduce major infrastructure (a cache, an observability vendor, a new framework) unless the user asks.
 - **Noise is a cost.** Style, naming, formatting, "consider adding", and "best practice" without a concrete failure are not findings. If a linter could say it, the linter should say it.
@@ -189,6 +187,6 @@ These are the specific ways an audit turns thin, and the ledger exists to make e
 - `references/lenses.md` — the questions hunters ask, grouped, with what mature software does and where the bugs hide
 - `references/context-record.md` — the understanding record format (phase 1)
 - `references/verification.md` — reproduction standards, verifier rules, exclusions and precedents, severity rubric
-- `references/dispatch-prompts.md` — worker prompt templates for context-builder, hunter, reproducer, verifier, fix-reviewer
+- `references/dispatch-prompts.md` — the five worker procedures (generated from the plugin's agents; same text)
 - `references/report-format.md` — the report contract
 - `scripts/inventory.py` — repo enumeration with risk and history heuristics

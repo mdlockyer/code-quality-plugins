@@ -42,3 +42,7 @@ The methodology is distilled from how teams that find real bugs with language mo
 ## License
 
 MIT
+
+## Skill-only installs
+
+Each skill also works on its own, without the plugin. `dist/<skill>.skill` is the packaged form; the skill carries the worker procedures as prompt templates in `references/dispatch-prompts.md` (generated from the plugin agents by `scripts/sync_skill_dist.py`, so the two never drift). Run that script after editing any agent or skill.

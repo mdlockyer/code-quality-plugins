@@ -19,7 +19,7 @@ A reproduction *test* (the preferred evidence) is judged on three code states, a
 - **Expected value:** derived from the spec, docstring, type, callers, issue, or hand arithmetic, and written down before the test is run. Never from running the code: that is the bug's output. If only a characterization is possible, write the test that pins the buggy output, confirm it passes, then invert the assertion to the specified value.
 - **Any correct fix:** the test asserts the behavior the contract promises, not the fix the hunter proposed. If it names a helper that doesn't exist yet or a call sequence the spec never required, it is pinned to one implementation and will block the next correct change; loosen it to the contract while keeping it strong.
 
-With the `behavioral-testing` plugin installed, the reproducer follows its `bug-repro` skill, which is the full version of these rules.
+When the `bug-repro` skill is available in the session, the reproducer follows it; it is the full version of these rules.
 
 A candidate becomes **TRACED** when execution was not possible (no runnable environment, requires production data, external dependency) and the reproducer instead wrote the full static path:
 

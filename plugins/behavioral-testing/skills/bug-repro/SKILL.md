@@ -33,10 +33,9 @@ Revert the fix (`git stash push -- <production paths>` or `git apply -R`), run t
 
 ## Audit use
 
-A production-code-audit candidate becomes CONFIRMED when this procedure produces a red test for its trigger. The reproducer should be given the candidate's trigger, path, and impact, plus the spec source for the expected behavior, and should not be given the hunter's proposed fix.
+A candidate from the `production-code-audit` skill becomes CONFIRMED when this procedure produces a red test for its trigger. The reproducer should be given the candidate's trigger, path, and impact, plus the spec source for the expected behavior, and should not be given the hunter's proposed fix.
 
 ## References
 
-- `../behavioral-unit-testing/SKILL.md` — the four questions
-- `../behavioral-unit-testing/references/oracle-ladder.md` §9 — fail-to-pass tests and the three code states, with rewrites
-- `../behavioral-unit-testing/references/domain-playbook.md` — reproducing async, time, database, and HTTP bugs deterministically
+- `references/dispatch-prompts.md` — the oracle-writer procedure, for deriving the expectation independently of the implementation when the issue doesn't state it
+- the `behavioral-unit-testing` skill, when installed — the four questions, §9 of its oracle ladder (fail-to-pass tests and the three code states, with rewrites), and the domain playbook

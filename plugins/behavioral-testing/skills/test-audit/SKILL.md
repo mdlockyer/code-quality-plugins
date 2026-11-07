@@ -7,7 +7,11 @@ description: Audit a test suite for tests that cannot fail, tests that pass on t
 
 The question is not "how much is covered" but "which tests would go red if the code were wrong". Most agent-written tests never would: in an 86k-patch field study, 80% of agent test patches had weak or no oracle, and nearly half of the passing checks agents collect also pass on the buggy code. A suite like that is not an oracle for anything, including this audit's own reproduction tests, so audit the suite before you trust it.
 
-This is a search, not a read. Enumerate every test, rank by weakness and stakes, examine each file narrowly, **prove** each finding by breaking the code and watching the test stay green, and let a fresh-context verifier throw out what doesn't hold up. The same ledger, statuses, and dispatch pattern as the production-code-audit plugin, for the same reasons.
+This is a search, not a read. Enumerate every test, rank by weakness and stakes, examine each file narrowly, **prove** each finding by breaking the code and watching the test stay green, and let a fresh-context verifier throw out what doesn't hold up.
+
+## Workers
+
+Three roles do the narrow work, each with a procedure in `references/dispatch-prompts.md` whose first paragraph lists the slots its task message needs: the **auditor** (one test file, five lenses, read-only), the **prover** (breaks the production code deliberately, runs the test, records the output, restores), and the **verifier** (fresh context; re-runs the proof and tries to reject). If your harness has named agents for these roles (a plugin build ships them as `test-auditor`, `test-prover`, `test-verifier`), dispatch those and send only the slots. Otherwise send the procedure plus the slots to a fresh-context worker. With no subagents at all, perform each role yourself, one file at a time, writing each result to the ledger before the next, and re-read finding files cold from disk before verifying them.
 
 ## Ledger
 
@@ -41,7 +45,7 @@ Done when every test file has a row in `inventory.md` with a stakes rank, and `o
 
 Done when every rank-4/5 test file (Deep: rank 3 too) has a findings file with a result for each lens.
 
-Dispatch one `test-auditor` per test file. The auditor runs the five lenses in `references/lenses.md` as separate passes and answers each with candidates or `nothing applies: <reason>`:
+Dispatch one auditor per test file. The auditor runs the five lenses in `references/lenses.md` as separate passes and answers each with candidates or `nothing applies: <reason>`:
 
 1. **Can't fail** — no assertion, existence-only, boolean-only, interaction-only, unreviewed snapshot, patched unit under test, expected value computed from the code's own formula or helper.
 2. **Would pass on the bug** — for tests that accompany a fix (find them via `git log -- <test file>` and the linked commit), the test must fail with the production change reverted; one that doesn't is regression-only evidence that was mistaken for a reproduction.
@@ -57,7 +61,7 @@ Hunters also look for **variants**: once a weak pattern is found (a helper that 
 
 Done when every lens-1 and lens-3 candidate has either a mutant record or a reason execution wasn't possible.
 
-Dispatch a `test-prover` per unit (batching the candidates that cover it). The prover breaks the production code the test is supposed to guard — flip a comparison, move a boundary by one, delete a branch, return a constant, drop an error path — runs the candidate test, and records the exact mutation and output. Test still green → CONFIRMED, and the mutant goes in the finding file (it becomes the acceptance test for the repair). Test goes red → the candidate is rejected with the mutant that killed it; the prover then checks whether the kill came from the strong assertion or from a crash (a `TypeError` on `None` is not a kill). The prover always restores the code and verifies the working tree is clean before returning.
+Dispatch a prover per unit (batching the candidates that cover it). The prover breaks the production code the test is supposed to guard — flip a comparison, move a boundary by one, delete a branch, return a constant, drop an error path — runs the candidate test, and records the exact mutation and output. Test still green → CONFIRMED, and the mutant goes in the finding file (it becomes the acceptance test for the repair). Test goes red → the candidate is rejected with the mutant that killed it; the prover then checks whether the kill came from the strong assertion or from a crash (a `TypeError` on `None` is not a kill). The prover always restores the code and verifies the working tree is clean before returning.
 
 Where a mutation tool ran in phase 0, its survivors on the unit are prior evidence; the prover still writes the one hand-picked mutant, because tool mutants are often equivalent or trivial and a human needs one they can read.
 
@@ -65,7 +69,7 @@ Where a mutation tool ran in phase 0, its survivors on the unit are prior eviden
 
 Done when every CONFIRMED candidate has a verdict.
 
-Dispatch a fresh-context `test-verifier` per finding (or small batch). It re-reads the cited lines, tries to reject: is there *another* test in the suite that catches the mutant (then the finding is "redundant test", a Low, not "unguarded unit")? Is the mutant equivalent (behavior unchanged)? Is the "suspicious" expected value actually what the spec says? Is the "pinned" assertion a documented contract? It re-rates severity with the rubric in `references/lenses.md` and dedupes to one finding per root cause.
+Dispatch a fresh-context verifier per finding (or small batch). It re-reads the cited lines, tries to reject: is there *another* test in the suite that catches the mutant (then the finding is "redundant test", a Low, not "unguarded unit")? Is the mutant equivalent (behavior unchanged)? Is the "suspicious" expected value actually what the spec says? Is the "pinned" assertion a documented contract? It re-rates severity with the rubric in `references/lenses.md` and dedupes to one finding per root cause.
 
 ## Phase 4 — Report and stop
 
@@ -102,4 +106,5 @@ Write `report.md` in the format in `references/report-format.md`: counts first, 
 - `references/report-format.md` — the report contract
 - `scripts/test_inventory.py` — inventory and tier classification
 - `scripts/mutation_runner.py` — detects and runs the stack's mutation tool incrementally
-- `../behavioral-unit-testing/references/oracle-ladder.md` — what each weak tier should become
+- `references/dispatch-prompts.md` — the auditor, prover, and verifier procedures
+- the `behavioral-unit-testing` skill's `oracle-ladder.md`, when installed — what each weak tier should become
