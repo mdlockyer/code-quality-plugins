@@ -29,17 +29,7 @@ Candidate statuses: `CONFIRMED` (reproduced by execution), `TRACED` (full static
 
 ## Where things run
 
-Before phase 0, work out the topology, because it is often not one machine. In Cowork the skill and its script live in a Linux sandbox, a folder added to the session is a synced copy of the working tree (usually without `.git` and never with the project's toolchain), and a host-shell connector such as traversal-workspace reaches the real repository on the person's machine. In Claude Code everything is one tree. Other hosts fall somewhere between.
-
-Figure out three things and write them at the top of `recon.md`: where the repository's files can be read, where its `.git` history and build toolchain can be executed, and where you can write freely. Then use each environment for what it has:
-
-- Read and grep files wherever they already are; the synced copy is fine for that.
-- Run `git log`, the build, the tests, and the linters where the toolchain is, and bring back only their text output. On a host shell, that means running the command there and writing the output into the ledger, not running it in the sandbox against a copy that can't build.
-- If `inventory.py` can't reach the repo, write the script to the host as a text file and run it there, or skip it and build the inventory by hand; the script is a convenience, not a gate.
-- Keep the ledger wherever you can write most freely; a host-side sibling directory beside the repo is a good default.
-- If a step needs something no reachable environment has (no `.git` anywhere, no toolchain), record that in `recon.md` as a coverage gap and move on.
-
-**Move text, not trees.** Never archive a repository (`git bundle`, `tar`, `zip`) to transfer it between environments, and never try to upload one through a file bridge. Those bridges are built for documents and refuse or truncate archives, and even when they work you end up auditing a stale copy. Every phase below works on read access plus the text output of commands.
+Work out the topology before phase 0, because it is often not one machine: in Cowork the skill and its script are in a sandbox, an added folder is a synced copy of the tree (usually without `.git` or the toolchain), and a host-shell connector reaches the real repository. Write at the top of `recon.md` where files can be read, where `.git` and the toolchain can execute, and where you can write. Read and grep wherever the files are; run `git log`, the build, tests, and linters wherever the toolchain is and bring back only their text output; keep the ledger where you can write freely. **Move text, not trees:** never archive a repository or push one through a file bridge to get it somewhere else; every phase works on read access plus command output. Details and the Cowork case in `references/environments.md`.
 
 ## Modes
 
@@ -55,15 +45,7 @@ Pick a mode from the size of the target and what the user asked for, and state i
 
 This skill is written for an orchestrator. You are the orchestrator; the phases below say which work to **dispatch** to a fresh-context worker and which to do yourself. Workers write their full output to the ledger and return only a short record. You read records, not prose.
 
-There are five worker roles. Each has a procedure in `references/dispatch-prompts.md`, and each procedure begins by listing the slots its task message must contain:
-
-| Phase | Role | Slots |
-|---|---|---|
-| 1 Understanding | context-builder | unit, repo root, ledger, references dir, recon facts for the unit |
-| 2 Hunt | hunter | unit, mode, ordered lens list, context record path, recon facts, repo root, ledger, references dir |
-| 3 Reproduce | reproducer | finding file(s), how to build/run/test, environment constraints, repo root, ledger, references dir |
-| 4 Verify | verifier | finding file(s), repo root, ledger, references dir, where recon.md is |
-| 6 Fix review | fix-reviewer | finding file, the diff, repo root, how to run tests |
+There are five worker roles, used in phases 1 (context-builder), 2 (hunter), 3 (reproducer), 4 (verifier), and 6 (fix-reviewer). Each has a procedure in `references/dispatch-prompts.md` that opens by listing the slots its task message must contain (unit or finding file, repo root, ledger, references dir, and the recon facts or run instructions it needs).
 
 How a role becomes a worker depends on the harness. If it has named agents for these roles (a plugin build of this skill ships them under the same names, prefixed `audit-`), dispatch the agent and send only the slots. Otherwise send the role's procedure from `dispatch-prompts.md` together with the slots as the worker's task, through whatever subagent mechanism exists. Always include the absolute path of this skill's `references/` directory, because workers read formats and rules from it. Workers get fresh context on purpose: give them facts (paths, the relevant part of `recon.md`), not your conclusions.
 
@@ -82,7 +64,7 @@ Done when: `recon.md` and `inventory.md` exist, every entry point is listed, and
 
 Do this yourself (it needs the whole-repo view) with help from the script.
 
-1. Where you can run it against the repo, run `python <skill-dir>/scripts/inventory.py <repo> --out <ledger>/inventory.json` (in the plugin, `<skill-dir>` is `${CLAUDE_PLUGIN_ROOT}/skills/production-code-audit`); it also writes `<ledger>/inventory.md` with a ranked table and an empty status ledger to fill in. It lists every source file with LOC, language, entry-point and risk markers, suppression comments, swallowed exceptions, TODO/FIXME/HACK density, and git churn and bug-fix frequency. It is a heuristic starting point, not the ranking, and not a gate: if it can't reach the repo (see Where things run), build the inventory by hand from the enumeration in steps 3 and 4 and from `git log --stat`.
+1. Where you can run it against the repo, run `python <skill-dir>/scripts/inventory.py <repo> --out <ledger>/inventory.json`; it also writes `<ledger>/inventory.md` with a ranked table and an empty status ledger. It lists every source file with LOC, language, entry-point and risk markers, suppressions, swallowed errors, debt markers, and git churn and bug-fix frequency. It is a heuristic starting point, not the ranking and not a gate: if it can't reach the repo, build the inventory by hand from steps 3 and 4 and `git log --stat`.
 2. Establish the stack, how it's built, how it's run, how it's deployed, and what the tests look like. Read the README, build files, CI config, Dockerfiles, and the test directory layout. Note anything the project claims to guarantee (docs, docstrings, type signatures, tests): that is the intended behavior you will compare against later.
 3. **Enumerate every entry point**: HTTP routes, RPC handlers, CLI commands, cron/scheduled jobs, queue and event consumers, webhooks, signal handlers, startup/shutdown hooks, migrations. Enumerate with grep and the framework's own registration patterns, not by browsing. A missed entry point is a missed audit.
 4. Map trust boundaries: what is user-controlled, what is tenant-scoped, what is operator-only, what comes from other services, what is persisted and read back later (stored input is still untrusted input).
@@ -135,7 +117,7 @@ Verifier verdicts: `KEEP` (with severity), `DOWNGRADE` (with reason), `REJECT` (
 
 Done when: `report.md` is written in the format in `references/report-format.md` and presented to the user.
 
-**Gate before writing.** Check `inventory.md`: every rank-4/5 unit has a context record and a hunt result for every lens in the mode, every dispatched worker returned, and every CONFIRMED/TRACED candidate has a verifier verdict. If any of that is missing, do not write the report yet. Re-dispatch what didn't return and finish the coverage. If that is not possible (a worker keeps failing, the budget is spent, the environment can't run something), stop and ask the user whether to continue or to accept a **partial audit**, and only then write a report whose title and first line say *partial* and whose coverage section lists exactly what was not examined. A report that quietly arrives six minutes into a Standard audit on a 25k-line codebase, with a worker that never finished, is the single most common way this skill fails; the gate exists so the choice is the user's, not the model's.
+**Gate before writing.** Check `inventory.md`: every rank-4/5 unit has a context record and a hunt result for every lens in the mode, every dispatched worker returned, and every CONFIRMED/TRACED candidate has a verifier verdict. If any of that is missing, do not write the report yet. Re-dispatch what didn't return and finish the coverage. If that is not possible (a worker keeps failing, the budget is spent, the environment can't run something), stop and ask the user whether to continue or to accept a **partial audit**, and only then write a report whose title and first line say *partial* and whose coverage section lists exactly what was not examined. A report that quietly arrives minutes into a Standard audit with a worker that never finished is the most common way this skill fails; the gate makes the choice the user's.
 
 The report leads with counts, then **coverage** (which units were examined, with which lenses, which were skipped and why, which oracles ran), then findings grouped by severity. Each finding carries its location(s), trigger, path, impact, reproduction evidence or trace, whether it's pre-existing or recently introduced (from git blame), and a proposed fix including any new dependency or breaking change. SPECULATIVE candidates go in a short appendix, clearly labeled, or are dropped if they are just noise. "No critical findings" is a legitimate result, but only when the coverage section earns it.
 
@@ -149,7 +131,7 @@ Before touching anything: `git status` must be clean, or the user has said which
 
 Apply approved fixes **one finding at a time, one commit each**, in the order the user gave. For every CONFIRMED finding, the reproduction test from phase 3 becomes the regression test in the project's suite; confirm it fails before the fix and passes after, on an assertion. Fix the class where a variant list exists, not just the instance. After each fix run the full suite, the type checker, and the linters and record actual output. Then run a fix review over that one diff with a fresh-context fix-reviewer worker; when the `test-repair` skill is available, its test-verifier role checks the regression test against the three code states, and the fix-reviewer procedure does a compact version of the same check on its own.
 
-Three rules the fix phase has to hold, because this is where audits have gone wrong in practice:
+Three rules the fix phase has to hold:
 
 - **Contract changes need the user, before the edit.** If a finding's proposed fix changes documented behavior, a public API, an accepted input, or an error shape, say so and get a yes first. Then, before committing, run everything that encodes the old contract: fixtures, golden files, recorded requests, integration tests, example clients. If any of it breaks, that is new information for the user, not a reason to widen the fix.
 - **A fix is a fix, not a redesign.** When the right fix turns out to need an architectural change, new research, or more than a reviewable diff, stop, record what was learned in the finding file, revert the partial work, and report. Spawning research agents and rewriting dozens of files inside phase 6 is how a seven-finding audit turns into a 50-file uncommitted diff.
@@ -188,5 +170,6 @@ These are the specific ways an audit turns thin, and the ledger exists to make e
 - `references/context-record.md` — the understanding record format (phase 1)
 - `references/verification.md` — reproduction standards, verifier rules, exclusions and precedents, severity rubric
 - `references/dispatch-prompts.md` — the five worker procedures (generated from the plugin's agents; same text)
+- `references/environments.md` — where things run, with the Cowork case
 - `references/report-format.md` — the report contract
 - `scripts/inventory.py` — repo enumeration with risk and history heuristics
