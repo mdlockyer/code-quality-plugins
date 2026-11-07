@@ -7,8 +7,8 @@
     "name": "Michael Lockyer",
     "url": "https://github.com/mdlockyer"
   },
-  "homepage": "https://github.com/mdlockyer/production-code-audit",
-  "repository": "https://github.com/mdlockyer/production-code-audit",
+  "homepage": "https://github.com/mdlockyer/code-quality-plugins",
+  "repository": "https://github.com/mdlockyer/code-quality-plugins",
   "license": "MIT",
   "keywords": ["audit", "code-review", "bugs", "production-readiness", "security", "verification"],
   "extensions": {
@@ -20,7 +20,7 @@
         "developerName": "Michael Lockyer",
         "category": "Developer Tools",
         "capabilities": ["Read", "Write"],
-        "websiteURL": "https://github.com/mdlockyer/production-code-audit",
+        "websiteURL": "https://github.com/mdlockyer/code-quality-plugins",
         "defaultPrompt": [
           "Audit this repo for production readiness and show me what will break.",
           "Go deep on everything that touches money, auth, or the database, with proof."

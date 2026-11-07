@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "mdlockyer-audit",
-  "description": "Production code audit: find the show-stoppers and the edge-case bugs, prove them, fix them with regression tests.",
+  "name": "mdlockyer-plugins",
+  "description": "Code-quality plugins: a production code audit that finds and proves bugs, and a behavioral-testing toolkit for tests that can actually fail.",
   "owner": {
     "name": "Michael Lockyer",
     "url": "https://github.com/mdlockyer"
@@ -13,7 +13,27 @@
       "description": "Audit a codebase the way years of production use would: enumerate, understand, hunt with single-question lenses, reproduce, verify adversarially, then fix with regression tests. Orchestration skill plus five worker agents.",
       "version": "0.1.0",
       "category": "development",
-      "keywords": ["audit", "code-review", "bugs", "production-readiness", "security", "verification"]
+      "keywords": [
+        "audit",
+        "code-review",
+        "bugs",
+        "production-readiness",
+        "security",
+        "verification"
+      ]
+    },
+    {
+      "name": "behavioral-testing",
+      "source": "./plugins/behavioral-testing",
+      "description": "Tests that can actually fail: writing guidance, a test-suite audit that proves weak tests with surviving mutants, a gated repair flow, and fail-to-pass bug reproduction. Five worker agents and two hooks.",
+      "version": "0.1.0",
+      "category": "development",
+      "keywords": [
+        "testing",
+        "test-quality",
+        "mutation-testing",
+        "bug-reproduction"
+      ]
     }
   ]
 }

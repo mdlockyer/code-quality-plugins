@@ -9,18 +9,18 @@ The goal is to make code behave like mature software, software that has been run
 **Claude Code** (one step on 2.1.275 or later):
 
 ```
-/plugin install production-code-audit --marketplace mdlockyer/production-code-audit
+/plugin install production-code-audit --marketplace mdlockyer/code-quality-plugins
 ```
 
-Or in two steps: `/plugin marketplace add mdlockyer/production-code-audit` then `/plugin install production-code-audit@mdlockyer-audit`.
+Or in two steps: `/plugin marketplace add mdlockyer/code-quality-plugins` then `/plugin install production-code-audit@mdlockyer-plugins`.
 
 **Claude Cowork / Claude desktop:** download `dist/production-code-audit.plugin` from a release and open it, or install from the marketplace as above.
 
 **OpenAI Codex:**
 
 ```
-codex plugin marketplace add mdlockyer/production-code-audit
-codex plugin add production-code-audit@mdlockyer-audit
+codex plugin marketplace add mdlockyer/code-quality-plugins
+codex plugin add production-code-audit@mdlockyer-plugins
 ```
 
 Codex defines subagents in its own TOML format. To give the audit its five workers in a repository, copy `codex/agents/*.toml` into that repository's `.codex/agents/` (or into `~/.codex/agents/` for every repository). Without them the skill still runs, using Codex's built-in `explorer` and `worker` agents for dispatch.
@@ -28,7 +28,7 @@ Codex defines subagents in its own TOML format. To give the audit its five worke
 **Google Antigravity (agy):**
 
 ```
-agy plugin install https://github.com/mdlockyer/production-code-audit/tree/main/plugins/production-code-audit
+agy plugin install https://github.com/mdlockyer/code-quality-plugins/tree/main/plugins/production-code-audit
 ```
 
 or from a clone: `agy plugin install ./plugins/production-code-audit`. The five agents load natively from `agents/`.

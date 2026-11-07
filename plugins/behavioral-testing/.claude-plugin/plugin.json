@@ -1,0 +1,21 @@
+{
+  "name": "behavioral-testing",
+  "version": "0.1.0",
+  "description": "Tests that can actually fail. Writing guidance (expected values from the spec, proof the test fails on the bug, no silent test edits, no building to the test), a test-suite audit that proves weak tests with surviving mutants, a gated repair flow, and fail-to-pass bug reproduction. Five worker agents and two hooks.",
+  "author": {
+    "name": "Michael Lockyer",
+    "url": "https://github.com/mdlockyer"
+  },
+  "homepage": "https://github.com/mdlockyer/code-quality-plugins",
+  "repository": "https://github.com/mdlockyer/code-quality-plugins",
+  "license": "MIT",
+  "keywords": [
+    "testing",
+    "unit-tests",
+    "test-quality",
+    "mutation-testing",
+    "bug-reproduction",
+    "flaky-tests",
+    "assertions"
+  ]
+}

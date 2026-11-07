@@ -1,7 +1,7 @@
 {
-  "name": "mdlockyer-audit",
+  "name": "mdlockyer-plugins",
   "interface": {
-    "displayName": "Production Code Audit"
+    "displayName": "Code Quality Plugins"
   },
   "plugins": [
     {
@@ -9,6 +9,18 @@
       "source": {
         "source": "local",
         "path": "./plugins/production-code-audit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
+    },
+    {
+      "name": "behavioral-testing",
+      "source": {
+        "source": "local",
+        "path": "./plugins/behavioral-testing"
       },
       "policy": {
         "installation": "AVAILABLE",

@@ -14,8 +14,8 @@
     "name": "Michael Lockyer",
     "url": "https://github.com/mdlockyer"
   },
-  "homepage": "https://github.com/mdlockyer/production-code-audit",
-  "repository": "https://github.com/mdlockyer/production-code-audit",
+  "homepage": "https://github.com/mdlockyer/code-quality-plugins",
+  "repository": "https://github.com/mdlockyer/code-quality-plugins",
   "license": "MIT",
   "keywords": ["audit", "code-review", "bugs", "production-readiness", "security", "verification"]
 }
