@@ -55,6 +55,14 @@ Ask for an audit in whatever words come naturally: "audit this repo for producti
 
 The audit never edits the repository until you approve fixes. It writes its working state to a sibling directory (`../<repo>-audit/`) and presents a report that leads with counts and a coverage section. Then it stops and asks which fixes to apply.
 
+## Works with behavioral-testing
+
+Install `behavioral-testing` from the same marketplace and the audit uses its `bug-repro` skill for reproductions (three code states: fails on the bug on an assertion, expected value from the spec, passes on any correct fix), its `test-verifier` for fix review, and its `test-auditor` for the "can the tests fail?" lens. Without it, the audit falls back to compact versions of the same rules in `references/verification.md`.
+
+## What the fix phase will and won't do
+
+Fixes land on an `audit/<date>` branch, one commit per approved finding, each with a regression test that was red before the fix. A fix that changes a documented behavior, public API, accepted input, or error shape needs your explicit yes before the edit, and the fix review runs the project's fixtures and recorded requests to see what the change breaks. When a correct fix turns out to need a redesign, the audit stops and reports instead of building it.
+
 ## Tuning it to your codebase
 
 When you reject a finding ("that's intentional", "not a problem here"), add the reason to the precedents list in `skills/production-code-audit/references/verification.md`, or to a `REVIEW.md` in your repository; the verifier reads both. That list is what keeps the signal clean over time.

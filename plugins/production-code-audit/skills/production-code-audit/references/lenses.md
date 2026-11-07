@@ -166,6 +166,16 @@ Candidates need a **trigger** (the input, state, or sequence that causes it), a 
 
 **How to look:** trace each user-initiated action from click to response to render, including the failure branches; look at what the frontend does with each error shape the backend can return.
 
+### L15 — Can the tests fail?
+
+**Question:** For the tests that cover this unit, what change to the unit's code would leave them green?
+
+**Mature software:** its tests go red when the code is wrong, because every bug that shipped got a test that would have caught it. A unit whose tests cannot fail is unguarded no matter how green the suite is.
+
+**Where bugs hide:** tests with no assertion, or only `is not None` / `toBeDefined` / `XCTAssertNotNil` / `.is_ok()`; tests that only check a mock was called; tests that patch the unit under test; expected values computed with the same helper the code uses; snapshots nobody reviews; a test that asserts the buggy behavior another lens flagged (it will keep the bug alive across future commits); a regression test added with a fix that also passes with the fix reverted; tests pinned to one implementation (call order, private helpers) that will block the next correct change.
+
+**How to look:** with the `behavioral-testing` plugin installed, dispatch its `test-auditor` on the unit's test files and take its lens-1 and lens-3 results; without it, read each test's assertions against the oracle tiers above, and for any candidate from another lens, check whether an existing test asserts the behavior the candidate says is wrong. Prove a can't-fail claim the way the candidate itself is proven: break the unit on purpose, run the test, watch it stay green, restore. A weak test guarding a flagged unit is a High.
+
 ---
 
 ## Variant hunting (standing instruction for every lens)

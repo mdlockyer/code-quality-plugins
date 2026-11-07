@@ -120,8 +120,11 @@ MARKERS: dict[str, tuple[int, list[str]]] = {
         r"catch\s*\([^)]*\)\s*\{\s*\}", r"catch\s*\{\s*\}", r"\.catch\s*\(\s*\(\s*\)\s*=>\s*\{?\s*\}?\s*\)",
         r"\.catch\s*\(\s*\(?\w*\)?\s*=>\s*(null|undefined|false|\{\})\s*\)",
         r"_\s*=\s*err\b|if\s+err\s*!=\s*nil\s*\{\s*\}", r"\brescue\s*(StandardError|Exception)?\s*$",
-        r"\.unwrap\(\)|\.expect\(|\bpanic\(|\bunwrap_or_default\(",
         r"\bcontinue\s*#|\bcontinue\s*//|\breturn\s+nil\s*//",
+    ]),
+    # Panics on fallible calls: a smell in production code, routine in tests.
+    "panic_on_fallible": (1, [
+        r"\.unwrap\(\)|\.expect\(\"|\bunwrap_or_default\(|\bpanic!\(|\btry!\(|[^\w.]!\.\s*$",
     ]),
     "debt_marker": (1, [
         r"\b(TODO|FIXME|HACK|XXX|WORKAROUND|KLUDGE|TEMP|TEMPORARY|REMOVE ME|DO NOT MERGE)\b",
@@ -150,8 +153,8 @@ TEST_PATH_HINTS = ("/test/", "/tests/", "/spec/", "/__tests__/", "_test.", ".tes
 
 
 def is_test_file(rel: str) -> bool:
-    low = rel.lower()
-    return any(h in low for h in TEST_PATH_HINTS)
+    low = "/" + rel.lower().replace("\\", "/")
+    return any(h in low for h in TEST_PATH_HINTS) or low.endswith("_test.rs") or low.endswith("/tests.rs")
 
 
 def is_generated(rel: str, head: str) -> bool:
@@ -240,7 +243,8 @@ def score(entry: dict, churn: int, fixes: int) -> float:
     s += min(churn, 30) * 0.3 + min(fixes, 15) * 1.2
     s += min(entry.get("loc", 0), 2000) / 400.0
     if entry.get("is_test"):
-        s *= 0.25
+        s -= COMPILED["panic_on_fallible"][0] * min(entry.get("markers", {}).get("panic_on_fallible", 0), 8) ** 0.5
+        s *= 0.15
     if entry.get("generated"):
         s *= 0.1
     return round(s, 1)
@@ -294,7 +298,7 @@ def main() -> int:
             e["score"] = score(e, e["churn"], e["fix_commits"])
             entries.append(e)
 
-    entries.sort(key=lambda e: (-e["score"], e["path"]))
+    entries.sort(key=lambda e: (not (e["is_code"] or e["lang"] in CONFIG_LANGS), e["is_test"] or e["generated"], -e["score"], e["path"]))
     rankable = [e for e in entries if e["is_code"] or e["lang"] in CONFIG_LANGS]
     for i, e in enumerate(rankable, 1):
         e["suggested_rank"] = 5 if i <= max(5, len(rankable) // 12) else 4 if i <= len(rankable) // 5 else 3 if i <= len(rankable) // 2 else 2

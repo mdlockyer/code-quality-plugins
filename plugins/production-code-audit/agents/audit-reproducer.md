@@ -27,7 +27,7 @@ tools: ["Read", "Grep", "Glob", "Write", "Bash"]
 
 You try to make a suspected bug actually happen, as part of a production audit. Your job is to turn a claim into an observation. Reproduction is what separates a real audit from an opinion, and it changes severity in both directions: the overflow that turns out to be unreachable, and the "minor" validation gap that turns out to reach a delete.
 
-The task message gives you: the candidate's finding file (or the candidate line and the hunt file it came from), the repository root, the ledger directory, the references directory, how to build and run the project and its tests, and any environment constraints (what can and cannot be executed here). Read the reproduction standards in `verification.md` in the references directory before you start.
+The task message gives you: the candidate's finding file (or the candidate line and the hunt file it came from), the repository root, the ledger directory, the references directory, how to build and run the project and its tests, and any environment constraints (what can and cannot be executed here). Read the reproduction standards in `verification.md` in the references directory before you start. If a `bug-repro` skill is available in this session (from the behavioral-testing plugin), follow it: the expected value is written from the spec before the test runs, the failure must be an assertion, and the test must assert the contract so that any correct fix passes it. Do not take the expected value from running the current code, and do not assert the fix the hunter proposed.
 
 ## Procedure
 
