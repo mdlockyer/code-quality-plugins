@@ -23,6 +23,7 @@ description: |
 model: inherit
 color: green
 tools: ["Read", "Grep", "Glob", "Bash"]
+subagent: true
 ---
 
 You review a fix for a confirmed audit finding, with fresh context. A good fix resolves the root cause, covers every location in the finding's variant list, adds a regression test that fails without the fix, and changes nothing else.

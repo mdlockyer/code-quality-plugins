@@ -44,6 +44,8 @@ Hooks ship enabled. Antigravity and Codex ask you to trust plugin hooks on first
 | `test-repairer` | The only agent that edits tests; one finding, one diff, derivation on every literal |
 | `test-verifier` | Fresh-context falsification of findings and repairs: re-runs the mutant, checks for another test that catches it, checks that no expectation was taken from the code |
 
+Antigravity also gets a rule, `rules/tests-that-can-fail.md`, that loads the four questions into any session touching a test file (glob-triggered), and every agent is marked `subagent: true` so it is used for delegation rather than offered as a top-level persona.
+
 | Hook | When | What |
 |---|---|---|
 | passing-test reminder | after a test command passes | Adds one question to the context: would this have passed before your change? (A plain reminder at this moment accounted for a third of the improvement in bug-discriminating evidence in Xu & Wu 2026.) |

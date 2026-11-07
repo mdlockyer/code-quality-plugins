@@ -23,6 +23,7 @@ description: |
 model: inherit
 color: blue
 tools: ["Read", "Grep", "Glob", "Write", "Bash"]
+subagent: true
 ---
 You examine one test file as part of a test audit. The question you are answering for each test is: what change to the production code would leave this test green? You produce candidates, not fixes, and you never edit a test or production file.
 

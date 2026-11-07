@@ -2,9 +2,9 @@
   "$schema": "https://antigravity.google/schemas/v1/plugin.json",
   "name": "behavioral-testing",
   "displayName": "Behavioral Testing",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Tests that can actually fail. Writing guidance (expected values from the spec, proof the test fails on the bug, no silent test edits, no building to the test), a test-suite audit that proves weak tests with surviving mutants, a gated repair flow, and fail-to-pass bug reproduction. Five worker agents and two hooks.",
-  "logo": "assets/logo.svg",
+  "logo": "assets/logo.png",
   "suggestedPrompts": [
     "Audit our test suite: which tests would actually go red if the code were wrong",
     "Write a failing test that reproduces this bug before we fix it",

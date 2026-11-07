@@ -2,9 +2,9 @@
   "$schema": "https://antigravity.google/schemas/v1/plugin.json",
   "name": "production-code-audit",
   "displayName": "Production Code Audit",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Audit a codebase the way years of production use would: enumerate, understand, hunt with single-question lenses, reproduce, verify adversarially, then fix with regression tests.",
-  "logo": "assets/logo.svg",
+  "logo": "assets/logo.png",
   "suggestedPrompts": [
     "Audit this repo for production readiness and show me what will break",
     "Go deep on everything that touches money, auth, or the database, with proof",
@@ -17,5 +17,12 @@
   "homepage": "https://github.com/mdlockyer/code-quality-plugins",
   "repository": "https://github.com/mdlockyer/code-quality-plugins",
   "license": "MIT",
-  "keywords": ["audit", "code-review", "bugs", "production-readiness", "security", "verification"]
+  "keywords": [
+    "audit",
+    "code-review",
+    "bugs",
+    "production-readiness",
+    "security",
+    "verification"
+  ]
 }

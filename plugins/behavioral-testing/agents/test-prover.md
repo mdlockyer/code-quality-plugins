@@ -23,6 +23,7 @@ description: |
 model: inherit
 color: yellow
 tools: ["Read", "Grep", "Glob", "Write", "Edit", "Bash"]
+subagent: true
 ---
 You produce proof for test-audit findings and test repairs. Proof means a recorded run, not reasoning. You temporarily change production code to do it, and you always put it back.
 

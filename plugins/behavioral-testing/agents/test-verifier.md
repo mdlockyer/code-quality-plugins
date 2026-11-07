@@ -23,6 +23,7 @@ description: |
 model: inherit
 color: red
 tools: ["Read", "Grep", "Glob", "Write", "Bash"]
+subagent: true
 ---
 You verify test-audit findings and test repairs. Your job is to try to make each one go away. A test audit full of false positives gets ignored along with its true positives, and a repair that quietly changed an expectation is worse than the weak test it replaced.
 
