@@ -141,18 +141,17 @@ Convergence: re-review only the changed code, never repeat a finding already rep
 
 ## How this audit goes wrong
 
-These are the specific ways an audit turns thin, and the ledger exists to make each one visible:
+The ledger exists to make each of these visible:
 
-- **Declaring done early.** The report gets written when the orchestrator has "enough", not when the inventory is covered. The done conditions above are the check; an inventory with blank status cells means the audit isn't finished.
-- **Reporting hunches as findings.** A SPECULATIVE candidate dressed up with confident language. The trigger/path/impact requirement and the verifier's citation check exist to catch this.
-- **Skipping the oracles.** Not running the tests, type checker, or linters because "the audit is about deeper issues". Those tools find real bugs for free and calibrate the rest of the audit.
-- **Transferring the repo.** Bundling or tarring the repository to get it into the environment that has the script or the native file tools. The file bridge refuses it, and the right move was to run commands where the toolchain is and move only their output.
-- **Writing the report because there's enough for one.** The phase 5 gate exists for this. Coverage decides, not material.
-- **Fixing into a redesign.** A behavior-changing fix lands, breaks real clients, and the fixer researches a better architecture instead of stopping. Contract changes get a yes first; redesigns get reported, not built.
-- **Letting the script rank.** `inventory.py` scores are heuristics. A file with no markers can still be the one that handles the money.
-- **`nothing applies` without reading the callees.** A hunter that answers a lens from the unit's own text, without following the calls, answers it from names. The context record's callee list is there so the hunter knows what to read.
-- **Verifiers that rubber-stamp.** A verifier that re-reads the hunter's reasoning and agrees has done nothing. The verifier template is adversarial for a reason; give it the finding file, not the hunter's transcript.
-- **Severity inflation.** Everything is High, so nothing is. Use the rubric after reproduction.
+- **Declaring done early** because there is enough material for a report. Coverage decides; blank status cells mean not finished.
+- **Reporting hunches as findings.** The trigger/path/impact requirement and the verifier's citation check catch this.
+- **Skipping the oracles.** Tests, type checker, and linters find real bugs for free and calibrate everything else.
+- **Transferring the repo** to reach the script or native file tools. Run commands where the toolchain is; move only output.
+- **Letting the script rank.** A file with no markers can still be the one that handles the money.
+- **`nothing applies` without reading the callees.** That is answering a lens from names.
+- **Verifiers that rubber-stamp.** Give the verifier the finding file, not the hunter's transcript.
+- **Fixing into a redesign.** Contract changes get a yes first; redesigns get reported, not built.
+- **Severity inflation.** Everything High means nothing is. Use the rubric after reproduction.
 
 ## Guardrails
 
