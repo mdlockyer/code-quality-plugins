@@ -1,6 +1,6 @@
 ---
 name: test-repair
-description: Repair tests that a test audit found weak, flaky, pinned to one implementation, or suspicious, with proof for every change: a surviving mutant that now dies, a revert that now goes red, or a shuffled run that now agrees. Use after a test audit when the user approves findings, or when asked to "fix these tests", "strengthen the assertions", "make this test actually test something", "un-mock this", or "fix the flaky tests". Never silently changes what a test asserts; tests that enforce suspicious behavior are escalated, not rewritten.
+description: "Repair tests that a test audit found weak, flaky, pinned to one implementation, or suspicious, with proof for every change: a surviving mutant that now dies, a revert that now goes red, or a shuffled run that now agrees. Use after a test audit when the user approves findings, or when asked to \"fix these tests\", \"strengthen the assertions\", \"make this test actually test something\", \"un-mock this\", or \"fix the flaky tests\". Never silently changes what a test asserts; tests that enforce suspicious behavior are escalated, not rewritten."
 ---
 
 # Test repair

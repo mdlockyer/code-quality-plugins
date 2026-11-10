@@ -26,7 +26,7 @@
       "name": "behavioral-testing",
       "source": "./plugins/behavioral-testing",
       "description": "Tests that can actually fail: writing guidance, a test-suite audit that proves weak tests with surviving mutants, a gated repair flow, and fail-to-pass bug reproduction. Five worker agents and two hooks.",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "category": "development",
       "keywords": [
         "testing",
